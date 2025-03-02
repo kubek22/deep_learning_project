@@ -1,14 +1,11 @@
 from torchvision import datasets, transforms
 import torchvision.models as models
 from torch.utils.data import DataLoader
-import torch.nn as nn
-import torch.optim as optim
 import time
 import torch
 import random
 import numpy as np
-from serialization import load, save
-from training_functions import train, evaluate
+from training_pipeline import repeat_training
 
 SEED = 42
 
@@ -17,8 +14,7 @@ np.random.seed(SEED)
 torch.manual_seed(SEED)
 torch.cuda.manual_seed(SEED)
 
-# make it bigger
-BATCH_SIZE = 256 # 128 / 256
+BATCH_SIZE = 256
 
 TRAIN_DIR = "data/train"
 VAL_DIR = "data/valid"
@@ -43,36 +39,21 @@ train_dataloader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True
 val_dataloader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
 test_dataloader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
 
-print(train_dataset.classes)
-
 # ResNet
-# possibly remove some first layers
-model = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
 N_CLASSES = 10
-model.fc = torch.nn.Linear(model.fc.in_features, N_CLASSES)
-model = model.to(device)
+def init_resnet():
+    model = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
+    model.fc = torch.nn.Linear(model.fc.in_features, N_CLASSES)
+    model = model.to(device)
+    return model
 
-criterion = nn.CrossEntropyLoss()
-# maybe set params for Adam
-optimizer = optim.Adam(model.parameters(), lr=0.001)
-epochs = 4
+n = 5
+LR = 0.001
 model_path = "output/models/resnet.pth"
+history_path = "output/history/resnet.pkl"
+epochs = 20
 
 start_time = time.time()
-print("starting training...")
-training_history = train(epochs, model, train_dataloader, val_dataloader, optimizer, criterion, device, model_path)
-print("training finished")
-print(training_history)
+repeat_training(n, init_resnet, LR, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device)
 end_time = time.time()
-print(f"training time: {end_time - start_time}\n")
-
-print("evaluating model...")
-test_accuracy, test_avg_loss = evaluate(model, test_dataloader, criterion, device)
-print(f"test loss: {test_avg_loss}, test accuracy: {test_accuracy}")
-
-training_history["accuracy_test"] = test_accuracy
-training_history["loss_test"] = test_avg_loss
-
-history_path = "output/history/resnet.pkl"
-save(training_history, history_path)
-training_history = load(history_path)
+print(f"total time: {end_time - start_time}\n")
