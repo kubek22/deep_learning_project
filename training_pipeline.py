@@ -33,6 +33,7 @@ def repeat_training(n, init_model, lr, model_path, history_path, epochs, train_d
         print(f"training time: {end_time - start_time}\n")
 
         print("evaluating model...")
+        # TODO replace model with best model (load it)
         test_accuracy, test_avg_loss = evaluate(model, test_dataloader, criterion, device)
         print(f"test loss: {test_avg_loss}, test accuracy: {test_accuracy}")
 
