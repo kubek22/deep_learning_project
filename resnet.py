@@ -25,11 +25,11 @@ N_CLASSES = 10
 def init_resnet():
     model = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
     # freezing layers
-    for param in model.parameters():
-        param.requires_grad = False
+    # for param in model.parameters():
+    #     param.requires_grad = False
     model.fc = torch.nn.Linear(model.fc.in_features, N_CLASSES)
-    for param in model.fc.parameters():
-        param.requires_grad = True
+    # for param in model.fc.parameters():
+    #     param.requires_grad = True
     model = model.to(device)
     return model
 
@@ -37,7 +37,7 @@ n = 5
 lr = 0.001
 model_path = "output/models/resnet/resnet.pth"
 history_path = "output/history/resnet/resnet.pkl"
-epochs = 20
+epochs = 10
 
 start_time = time.time()
 repeat_training(n, init_resnet, lr, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device)

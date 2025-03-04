@@ -25,20 +25,20 @@ N_CLASSES = 10
 def init_efficientnet():
     model = models.efficientnet_b0(weights=models.EfficientNet_B0_Weights.DEFAULT)
     # freezing layers
-    for param in model.parameters():
-        param.requires_grad = False
+    # for param in model.parameters():
+    #     param.requires_grad = False
     num_features = model.classifier[1].in_features
     model.classifier[1] = torch.nn.Linear(num_features, N_CLASSES)
-    for param in model.classifier.parameters():
-        param.requires_grad = True
+    # for param in model.classifier.parameters():
+    #     param.requires_grad = True
     model = model.to(device)
     return model
 
-n = 2
+n = 5
 lr = 0.001
 model_path = "output/models/efficientnet/efficientnet.pth"
 history_path = "output/history/efficientnet/efficientnet.pkl"
-epochs = 1
+epochs = 10
 
 start_time = time.time()
 repeat_training(n, init_efficientnet, lr, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device)
