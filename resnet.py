@@ -5,6 +5,7 @@ import random
 import numpy as np
 from training_pipeline import repeat_training
 from data_loader import load_datasets, create_data_loaders
+import os
 
 SEED = 42
 
@@ -33,11 +34,18 @@ def init_resnet():
     model = model.to(device)
     return model
 
+model_dir = "output/models/resnet"
+history_dir = "output/history/resnet"
+
+os.makedirs(model_dir, exist_ok=True)
+os.makedirs(history_dir, exist_ok=True)
+
+model_path = model_dir + "/resnet.pth"
+history_path = history_dir + "/resnet.pkl"
+
+epochs = 10
 n = 5
 lr = 0.001
-model_path = "output/models/resnet/resnet.pth"
-history_path = "output/history/resnet/resnet.pkl"
-epochs = 10
 
 start_time = time.time()
 repeat_training(n, init_resnet, lr, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device)

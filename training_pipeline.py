@@ -19,16 +19,16 @@ def repeat_training(n, init_model, lr, model_path, history_path, epochs, train_d
         model = init_model()
         print(f"training iteration: {i+1} of {n}")
         criterion = nn.CrossEntropyLoss()
-        # optimizer = optim.Adam(model.parameters(), lr=lr)
+        optimizer = optim.Adam(model.parameters(), lr=lr)
 
         # training only the last layer
-        last_layer = None
-        if hasattr(model, 'fc'):
-            last_layer = model.fc
-        elif hasattr(model, 'classifier'):
-            last_layer = model.classifier
-
-        optimizer = optim.Adam(last_layer.parameters(), lr=lr)
+        # last_layer = None
+        # if hasattr(model, 'fc'):
+        #     last_layer = model.fc
+        # elif hasattr(model, 'classifier'):
+        #     last_layer = model.classifier
+        #
+        # optimizer = optim.Adam(last_layer.parameters(), lr=lr)
 
         model_path_idx = add_prefix_to_path(model_path, i+1)
         history_path_idx = add_prefix_to_path(history_path, i+1)
