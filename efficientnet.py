@@ -5,6 +5,7 @@ import random
 import numpy as np
 from training_pipeline import repeat_training
 from data_loader import load_datasets, create_data_loaders
+import os
 
 SEED = 42
 
@@ -16,7 +17,9 @@ torch.cuda.manual_seed(SEED)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 size = (224, 224)
-BATCH_SIZE = 256
+# smaller batch size maybe
+# BATCH_SIZE = 256
+BATCH_SIZE = 128
 
 train_dataset, val_dataset, test_dataset = load_datasets(size)
 train_dataloader, val_dataloader, test_dataloader = create_data_loaders(train_dataset, val_dataset, test_dataset, BATCH_SIZE)
@@ -34,11 +37,20 @@ def init_efficientnet():
     model = model.to(device)
     return model
 
+
+model_dir = "output/models/efficientnet"
+history_dir = "output/history/efficientnet"
+
+os.makedirs(model_dir, exist_ok=True)
+os.makedirs(history_dir, exist_ok=True)
+
+model_path = model_dir + "/efficientnet.pth"
+history_path = history_dir + "/efficientnet.pkl"
+
 n = 5
 lr = 0.001
-model_path = "output/models/efficientnet/efficientnet.pth"
-history_path = "output/history/efficientnet/efficientnet.pkl"
 epochs = 10
+# epochs may be decreased to 5
 
 start_time = time.time()
 repeat_training(n, init_efficientnet, lr, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device)

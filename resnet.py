@@ -17,7 +17,8 @@ torch.cuda.manual_seed(SEED)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 size = (224, 224)
-BATCH_SIZE = 256
+# BATCH_SIZE = 256
+BATCH_SIZE = 128
 
 train_dataset, val_dataset, test_dataset = load_datasets(size)
 train_dataloader, val_dataloader, test_dataloader = create_data_loaders(train_dataset, val_dataset, test_dataset, BATCH_SIZE)
