@@ -14,12 +14,15 @@ def add_prefix_to_path(path, prefix):
     new_path = os.path.join(dirpath, file)
     return new_path
 
-def repeat_training(n, init_model, lr, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device):
+def repeat_training(n, init_model, lr, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device, dropout=False, betas = (0.9, 0.99)):
     for i in range(n):
-        model = init_model()
+        if not dropout:
+            model = init_model()
+        else:
+            model = init_model(dropout)
         print(f"training iteration: {i+1} of {n}")
         criterion = nn.CrossEntropyLoss()
-        optimizer = optim.Adam(model.parameters(), lr=lr)
+        optimizer = optim.Adam(model.parameters(), lr=lr, betas=betas)
 
         # training only the last layer
         # last_layer = None
@@ -43,7 +46,10 @@ def repeat_training(n, init_model, lr, model_path, history_path, epochs, train_d
         print(f"training time: {end_time - start_time}\n")
 
         print("evaluating model...")
-        best_model = init_model()
+        if not dropout:
+            best_model = init_model()
+        else:
+            best_model = init_model(dropout)
         best_model.load_state_dict(torch.load(model_path_idx, weights_only=True))
         test_accuracy, test_avg_loss = evaluate(best_model, test_dataloader, criterion, device)
         print(f"test loss: {test_avg_loss}, test accuracy: {test_accuracy}")
@@ -53,3 +59,15 @@ def repeat_training(n, init_model, lr, model_path, history_path, epochs, train_d
 
         save(training_history, history_path_idx)
         print("training history saved\n")
+
+def train_with_different_parameters(n, init_model, epochs, train_dataloader, val_dataloader, test_dataloader, device, batchsize):
+    lrs = [i*0.002 for i in range(1,6)]
+    dropouts = [i/10 for i in range(3,7)]
+    betas = [(1-i/10, 1- i/1000) for i in range(1,4)]
+    for lr in lrs:
+        for drop in dropouts:
+            for beta in betas:
+                newpath = f'output/history/cnn_lr={lr}_drop={drop}_beta={beta}_batch={batchsize}/'
+                if not os.path.exists(newpath):
+                    os.makedirs(newpath)
+                repeat_training(n,init_model, lr, newpath, newpath, epochs, train_dataloader, val_dataloader, test_dataloader, device, dropout=drop, betas = beta)
