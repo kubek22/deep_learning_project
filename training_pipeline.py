@@ -14,7 +14,7 @@ def add_prefix_to_path(path, prefix):
     new_path = os.path.join(dirpath, file)
     return new_path
 
-def repeat_training(n, init_model, lr, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device, dropout=False, betas = (0.9, 0.99)):
+def repeat_training(n, init_model, lr, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device, dropout=False, betas = (0.9, 0.999)):
     for i in range(n):
         if not dropout:
             model = init_model()
@@ -70,4 +70,4 @@ def train_with_different_parameters(n, init_model, epochs, train_dataloader, val
                 newpath = f'output/history/cnn_lr={lr}_drop={drop}_beta={beta}_batch={batchsize}/'
                 if not os.path.exists(newpath):
                     os.makedirs(newpath)
-                repeat_training(n,init_model, lr, newpath, newpath, epochs, train_dataloader, val_dataloader, test_dataloader, device, dropout=drop, betas = beta)
+                repeat_training(n,init_model, lr, newpath, newpath, epochs, train_dataloader, val_dataloader, test_dataloader, device, dropout=drop, betas=beta)
