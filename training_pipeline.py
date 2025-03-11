@@ -60,14 +60,13 @@ def repeat_training(n, init_model, lr, model_path, history_path, epochs, train_d
         save(training_history, history_path_idx)
         print("training history saved\n")
 
-def train_with_different_parameters(n, init_model, epochs, train_dataloader, val_dataloader, test_dataloader, device, batchsize):
-    lrs = [i*0.002 for i in range(1,6)]
-    dropouts = [i/10 for i in range(3,7)]
-    betas = [(1-i/10, 1- i/1000) for i in range(1,4)]
+def train_with_different_parameters(n, init_model, epochs, train_dataloader, val_dataloader, test_dataloader, device, batchsize, lrs= [0.001], dropouts=[0.5], betas = [(0.9,0.99)]):
     for lr in lrs:
         for drop in dropouts:
             for beta in betas:
                 newpath = f'output/history/cnn_lr={lr}_drop={drop}_beta={beta}_batch={batchsize}/'
                 if not os.path.exists(newpath):
                     os.makedirs(newpath)
-                repeat_training(n,init_model, lr, newpath, newpath, epochs, train_dataloader, val_dataloader, test_dataloader, device, dropout=drop, betas = beta)
+                history_path = os.path.join(newpath, 'history')
+                model_path = os.path.join(newpath, 'model')
+                repeat_training(n,init_model, lr, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device, dropout=drop, betas = beta)
