@@ -70,9 +70,12 @@ def train_with_different_parameters(n, init_model, epochs, train_dataloader, val
     for lr in lrs:
         for drop in dropouts:
             for beta in betas:
-                newpath = f'output/history/cnn_lr={lr}_drop={drop}_beta={beta}_batch={batchsize}/'
-                if not os.path.exists(newpath):
-                    os.makedirs(newpath)
-                history_path = os.path.join(newpath, 'history')
-                model_path = os.path.join(newpath, 'model')
+                newpath_history = f'output/history/cnn_lr={lr}_drop={drop}_beta={beta}_batch={batchsize}/'
+                newpath_model = f'output/models/cnn_lr={lr}_drop={drop}_beta={beta}_batch={batchsize}/'
+                if not os.path.exists(newpath_history):
+                    os.makedirs(newpath_history)
+                if not os.path.exists(newpath_model):
+                    os.makedirs(newpath_model)
+                history_path = os.path.join(newpath_history, 'history')
+                model_path = os.path.join(newpath_model, 'model')
                 repeat_training(n,init_model, lr, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device, dropout=drop, betas = beta)
