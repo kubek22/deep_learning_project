@@ -2,10 +2,13 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import time
-
+import matplotlib.pyplot as plt
+import seaborn as sns
 import os
-from serialization import save
+from serialization import save, load
 from training_functions import train, evaluate
+import pandas as pd
+
 
 def add_prefix_to_path(path, prefix):
     dirpath, filename = os.path.split(path)
@@ -66,7 +69,7 @@ def repeat_training(n, init_model, lr, model_path, history_path, epochs, train_d
         save(training_history, history_path_idx)
         print("training history saved\n")
 
-def train_with_different_parameters(n, init_model, epochs, train_dataloader, val_dataloader, test_dataloader, device, batchsize, lrs= [0.001], dropouts=[0.5], betas = [(0.9,0.999)]):
+def train_with_different_parameters(n, init_model, epochs, train_dataloader, val_dataloader, test_dataloader, device, batchsize, lrs=[0.001], dropouts=[0.5], betas=[(0.9,0.999)]):
     for lr in lrs:
         for drop in dropouts:
             for beta in betas:
@@ -79,3 +82,31 @@ def train_with_different_parameters(n, init_model, epochs, train_dataloader, val
                 history_path = os.path.join(newpath_history, 'history')
                 model_path = os.path.join(newpath_model, 'model')
                 repeat_training(n,init_model, lr, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device, dropout=drop, betas = beta)
+
+def plot_results(n, batchsize, lrs, dropouts, betas, x_values, x_label):
+    data = []
+    for lr in lrs:
+        for drop in dropouts:
+            for beta in betas:
+                accuracy_results = []
+                for i in range(1, n+1):
+                    newpath_history = f'output/history/cnn_lr={lr}_drop={drop}_beta={beta}_batch={batchsize}/'
+                    history_path = os.path.join(newpath_history, f'history_{i}')
+                    history = load(history_path)
+                    accuracy_test = history["accuracy_test"]
+                    accuracy_results.append(accuracy_test)
+                data.append(accuracy_results)
+
+    plot_data = []
+    for i in range(len(x_values)):
+        param = x_values[i]
+        results = data[i]
+        for res in results:
+            plot_data.append({x_label: param, "test accuracy": res})
+
+    df = pd.DataFrame(plot_data)
+
+    plt.figure(figsize=(8, 5))
+    sns.boxplot(x=x_label, y="test accuracy", data=df)
+    plt.title('Boxplot of Results for Each Parameter Value')
+    plt.show()
