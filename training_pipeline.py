@@ -18,7 +18,7 @@ def add_prefix_to_path(path, prefix):
     new_path = os.path.join(dirpath, file)
     return new_path
 
-def repeat_training(n, init_model, lr, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device, dropout=False, betas=(0.9, 0.999), tolerance=math.inf):
+def repeat_training(n, init_model, lr, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device, dropout=False, betas=(0.9, 0.999), weight_decay=0, tolerance=math.inf):
     for i in range(n):
         if not dropout:
             model = init_model()
@@ -29,7 +29,7 @@ def repeat_training(n, init_model, lr, model_path, history_path, epochs, train_d
 
         print(f"training iteration: {i+1} of {n}")
         criterion = nn.CrossEntropyLoss()
-        optimizer = optim.Adam(model.parameters(), lr=lr, betas=betas)
+        optimizer = optim.Adam(model.parameters(), lr=lr, betas=betas, weight_decay=weight_decay)
 
         # training only the last layer
         # last_layer = None
@@ -84,19 +84,20 @@ def train_with_different_parameters(n, init_model, epochs, train_dataloader, val
                 model_path = os.path.join(newpath_model, 'model')
                 repeat_training(n,init_model, lr, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device, dropout=drop, betas=beta)
 
-def plot_results(n, batchsize, lrs, dropouts, betas, x_values, x_label):
+def plot_results(n, batch_sizes, lrs, dropouts, betas, x_values, x_label):
     data = []
-    for lr in lrs:
-        for drop in dropouts:
-            for beta in betas:
-                accuracy_results = []
-                for i in range(1, n+1):
-                    newpath_history = f'output/history/cnn_lr={lr}_drop={drop}_beta={beta}_batch={batchsize}/'
-                    history_path = os.path.join(newpath_history, f'history_{i}')
-                    history = load(history_path)
-                    accuracy_test = history["accuracy_test"]
-                    accuracy_results.append(accuracy_test)
-                data.append(accuracy_results)
+    for batch_size in batch_sizes:
+        for lr in lrs:
+            for drop in dropouts:
+                for beta in betas:
+                    accuracy_results = []
+                    for i in range(1, n+1):
+                        newpath_history = f'output/history/cnn_lr={lr}_drop={drop}_beta={beta}_batch={batch_size}/'
+                        history_path = os.path.join(newpath_history, f'history_{i}')
+                        history = load(history_path)
+                        accuracy_test = history["accuracy_test"]
+                        accuracy_results.append(accuracy_test)
+                    data.append(accuracy_results)
 
     plot_data = []
     for i in range(len(x_values)):
