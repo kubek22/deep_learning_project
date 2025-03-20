@@ -84,6 +84,17 @@ def train_with_different_parameters(n, init_model, epochs, train_dataloader, val
                 model_path = os.path.join(newpath_model, 'model')
                 repeat_training(n,init_model, lr, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device, dropout=drop, betas=beta)
 
+def train_with_augmentation(n, init_model, epochs, train_dataloader, val_dataloader, test_dataloader, device, batchsize, lr=0.001, drop=0.5, beta=(0.9,0.999), aug=None):
+    newpath_history = f'output/history/cnn_lr={lr}_drop={drop}_beta={beta}_batch={batchsize}_aug={aug}/'
+    newpath_model = f'output/models/cnn_lr={lr}_drop={drop}_beta={beta}_batch={batchsize}_aug={aug}/'
+    if not os.path.exists(newpath_history):
+        os.makedirs(newpath_history)
+    if not os.path.exists(newpath_model):
+        os.makedirs(newpath_model)
+    history_path = os.path.join(newpath_history, 'history')
+    model_path = os.path.join(newpath_model, 'model')
+    repeat_training(n,init_model, lr, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device, dropout=drop, betas=beta)
+
 def plot_results(n, batch_sizes, lrs, dropouts, betas, x_values, x_label):
     data = []
     for batch_size in batch_sizes:
