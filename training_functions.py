@@ -1,4 +1,6 @@
 import torch
+import math
+
 
 def training_epoch(model, dataloader, optimizer, criterion, device):
     model.train()
@@ -23,6 +25,7 @@ def training_epoch(model, dataloader, optimizer, criterion, device):
     accuracy = 100 * correct / n
     return accuracy, avg_loss
 
+
 def evaluate(model, dataloader, criterion, device):
     correct = 0
     n = 0
@@ -42,11 +45,14 @@ def evaluate(model, dataloader, criterion, device):
     accuracy = 100 * correct / n
     return accuracy, avg_loss
 
-def train(epochs, model, train_dataloader, val_dataloader, optimizer, criterion, device, model_path):
+
+def train(epochs, model, train_dataloader, val_dataloader, optimizer, criterion, device, model_path,
+          tolerance=math.inf):
     train_accuracy_list, train_loss_list = [], []
     val_accuracy_list, val_loss_list = [], []
     best_loss = float('inf')
     last_save = 0
+    epochs_without_improvement = 0
 
     for epoch in range(epochs):
         train_accuracy, train_avg_loss = training_epoch(model, train_dataloader, optimizer, criterion, device)
@@ -63,7 +69,13 @@ def train(epochs, model, train_dataloader, val_dataloader, optimizer, criterion,
             best_loss = val_avg_loss
             torch.save(model.state_dict(), model_path)
             last_save = epoch + 1
+            epochs_without_improvement = 0
             print("model saved")
+        else:
+            epochs_without_improvement += 1
+            if epochs_without_improvement > tolerance:
+                print(f"Training stopped. Tolerance {tolerance} exceeded")
+                break
         print()
 
     history = {

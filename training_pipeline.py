@@ -8,6 +8,7 @@ import os
 from serialization import save, load
 from training_functions import train, evaluate
 import pandas as pd
+import math
 
 
 def add_prefix_to_path(path, prefix):
@@ -17,7 +18,7 @@ def add_prefix_to_path(path, prefix):
     new_path = os.path.join(dirpath, file)
     return new_path
 
-def repeat_training(n, init_model, lr, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device, dropout=False, betas = (0.9, 0.99)):
+def repeat_training(n, init_model, lr, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device, dropout=False, betas=(0.9, 0.999), tolerance=math.inf):
     for i in range(n):
         if not dropout:
             model = init_model()
@@ -45,7 +46,7 @@ def repeat_training(n, init_model, lr, model_path, history_path, epochs, train_d
         start_time = time.time()
         print("starting training...")
         training_history = train(epochs, model, train_dataloader, val_dataloader, optimizer, criterion, device,
-                                 model_path_idx)
+                                 model_path_idx, tolerance)
         print("training finished\n")
         print(training_history)
         end_time = time.time()
@@ -81,7 +82,7 @@ def train_with_different_parameters(n, init_model, epochs, train_dataloader, val
                     os.makedirs(newpath_model)
                 history_path = os.path.join(newpath_history, 'history')
                 model_path = os.path.join(newpath_model, 'model')
-                repeat_training(n,init_model, lr, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device, dropout=drop, betas = beta)
+                repeat_training(n,init_model, lr, model_path, history_path, epochs, train_dataloader, val_dataloader, test_dataloader, device, dropout=drop, betas=beta)
 
 def plot_results(n, batchsize, lrs, dropouts, betas, x_values, x_label):
     data = []
