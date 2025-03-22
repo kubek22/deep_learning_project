@@ -44,7 +44,7 @@ class CombinedDataset(torch.utils.data.Dataset):
             return self.transform_augmented(img), label
 
 def load_datasets(size, apply_rotation=False, apply_blur=False, apply_brightness=False, apply_cutout=False,
-                        rotation = 30, brightenes = 0.3, blur_size = 3, num_holes=1, hole_size = 6):
+                  rotation = 30, brightness = 0.3, blur_size = 3, num_holes=1, hole_size = 6):
     original_transforms = transforms.Compose([
         transforms.Resize(size),
         transforms.ToTensor(),
@@ -56,7 +56,7 @@ def load_datasets(size, apply_rotation=False, apply_blur=False, apply_brightness
     if apply_rotation:
         augmented_transforms.append(transforms.RandomRotation(degrees=rotation))
     if apply_brightness:
-        augmented_transforms.append(transforms.ColorJitter(brightness=brightenes))
+        augmented_transforms.append(transforms.ColorJitter(brightness=brightness))
     if apply_blur:
         augmented_transforms.append(transforms.GaussianBlur(kernel_size=blur_size))
     augmented_transforms.extend([
