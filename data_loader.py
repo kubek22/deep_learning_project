@@ -84,8 +84,8 @@ def load_datasets(size, apply_rotation=False, apply_blur=False, apply_brightness
     
     return train_dataset, val_dataset, test_dataset
 
-def create_data_loaders(train_dataset, val_dataset, test_dataset, batch_size):
-    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+def create_data_loaders(train_dataset, val_dataset, test_dataset, batch_size, shuffle_train=True):
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle_train)
     val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     return train_dataloader, val_dataloader, test_dataloader

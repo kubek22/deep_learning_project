@@ -6,6 +6,7 @@ import numpy as np
 from training_pipeline import repeat_training
 from data_loader import load_datasets, create_data_loaders
 import os
+from init_nets import init_resnet
 
 SEED = 42
 
@@ -32,18 +33,6 @@ apply_cutout = True
 
 train_dataset, val_dataset, test_dataset = load_datasets(size, apply_rotation=apply_rotation, apply_blur=apply_blur, apply_brightness=apply_brightness, apply_cutout=apply_cutout)
 train_dataloader, val_dataloader, test_dataloader = create_data_loaders(train_dataset, val_dataset, test_dataset, BATCH_SIZE)
-
-N_CLASSES = 10
-def init_resnet():
-    model = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
-    # freezing layers
-    # for param in model.parameters():
-    #     param.requires_grad = False
-    model.fc = torch.nn.Linear(model.fc.in_features, N_CLASSES)
-    # for param in model.fc.parameters():
-    #     param.requires_grad = True
-    model = model.to(device)
-    return model
 
 model_dir = "output/models/resnet"
 history_dir = "output/history/resnet"
