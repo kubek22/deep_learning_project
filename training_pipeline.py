@@ -121,5 +121,4 @@ def plot_results(n, batch_sizes, lrs, dropouts, betas, x_values, x_label):
 
     plt.figure(figsize=(8, 5))
     sns.boxplot(x=x_label, y="test accuracy", data=df)
-    plt.title('Boxplot of Results for Each Parameter Value')
     plt.show()

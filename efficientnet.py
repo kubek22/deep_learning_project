@@ -21,7 +21,7 @@ size = (224, 224)
 BATCH_SIZE = 128
 
 # optimal parameters
-learning_rate = 0.0005
+learning_rate = 0.001
 betas = (0.7, 0.997)
 weight_decay = 1e-5
 
