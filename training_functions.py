@@ -27,6 +27,7 @@ def training_epoch(model, dataloader, optimizer, criterion, device):
 
 
 def evaluate(model, dataloader, criterion, device):
+    total_loss = 0
     correct = 0
     n = 0
     model.eval()
@@ -37,11 +38,11 @@ def evaluate(model, dataloader, criterion, device):
             _, predicted = torch.max(output, 1)
 
             loss = criterion(output, y)
-            batch_loss = loss.item()
+            total_loss += loss.item()
             n += y.size(0)
             correct += predicted.eq(y).sum().item()
 
-    avg_loss = batch_loss / n
+    avg_loss = total_loss / n
     accuracy = 100 * correct / n
     return accuracy, avg_loss
 
